@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>HW8 搜尋引擎</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: rgb(252, 240, 209);}
+        .container { max-width: 700px; margin: 0 auto;}
+        .search-form { max-width: 700px;margin-bottom: 30px;margin:0 auto; text-align: center; background-color: rgb(233, 233, 233) ;border-radius: 30px;}
+        .shadow{margin:0 auto;max-width: 900px;background-color: rgb(123, 123, 123);border-radius: 20px;}
+        .search-box { width: 300px; padding: 8px; border-radius: 5px;border-color: aliceblue;}
+        .search-button { padding: 8px 12px;border-radius: 5px;border-color: aliceblue; }
+        .result-item { margin-bottom: 15px; }
+        .result-title { font-size: 1.2em; }
+        .result-link { font-size: 0.9em; color: green; }
+        .header { padding: 5px ;color: rgb(29, 29, 29);font-family: 'Times New Roman', Times, serif; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="shadow">
+        <div class="search-form">
+            <h1 class="header">BROWSER</h1>
+            <form action="/search" method="get">
+                <input type="text" name="query" class="search-box" th:value="${query}" placeholder="輸入關鍵字..." />
+                <button type="submit" class="search-button">搜尋</button>
+            </form>
+        </div></div>
+
+        <div class="results" th:if="${results}">
+            
+            <div th:if="${results.isEmpty()}">
+                <p>找不到關於 "<strong th:text="${query}"></strong>" 的結果。</p>
+            </div>
+
+            <div th:unless="${results.isEmpty()}" th:each="entry : ${results}" class="result-item">
+                <a th:href="${entry.value}" target="_blank" class="result-title">
+                    <span th:text="${entry.key}">[這是標題]</span>
+                </a>
+                <br/>
+                <span th:text="${entry.value}" class="result-link">[這是連結]</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
