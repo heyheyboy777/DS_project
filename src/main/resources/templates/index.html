@@ -1,0 +1,322 @@
+<!--<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>HW8 搜尋引擎</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: rgb(252, 240, 209);}
+        .container { max-width: 700px; margin: 0 auto;}
+        .search-form { max-width: 700px;margin-bottom: 30px;margin:0 auto; text-align: center; background-color: rgb(233, 233, 233) ;border-radius: 30px;}
+        .shadow{margin:0 auto;max-width: 900px;background-color: rgb(123, 123, 123);border-radius: 20px;}
+        .search-box { width: 300px; padding: 8px; border-radius: 5px;border-color: aliceblue;}
+        .search-button { padding: 8px 12px;border-radius: 5px;border-color: aliceblue; }
+        .result-item { margin-bottom: 15px; }
+        .result-title { font-size: 1.2em; }
+        .result-link { font-size: 0.9em; color: green; }
+        .header { padding: 5px ;color: rgb(29, 29, 29);font-family: 'Times New Roman', Times, serif; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="shadow">
+        <div class="search-form">
+            <h1 class="header">BROWSER</h1>
+            <form action="/search" method="get">
+                <input type="text" name="query" class="search-box" th:value="${query}" placeholder="輸入關鍵字..." />
+                <button type="submit" class="search-button">搜尋</button>
+            </form>
+        </div></div>
+
+        <div class="results" th:if="${results}">
+
+  <div th:if="${results.isEmpty()}">
+    <p>找不到關於 "<strong th:text="${query}"></strong>" 的結果。</p>
+  </div>
+
+  <div th:unless="${results.isEmpty()}" th:each="r : ${results}" class="result-item">
+    <a th:href="${r.url}" target="_blank" class="result-title">
+      <span th:text="${r.title}">[這是標題]</span>
+    </a>
+    <br/>
+    <span th:text="${r.url}" class="result-link">[這是連結]</span>
+
+    想顯示分數就留著，不想就刪掉 
+    <div>score: <span th:text="${r.score}"></span></div>
+  </div>
+
+</div>
+
+
+    </div>
+
+</body>
+</html>-->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <title>HW8 搜尋引擎</title>
+    
+    <style>
+        :root {
+            --primary-color: #2563eb; /* 專業藍 */
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;      /* 很淺的灰藍背景 */
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --link-color: #2563eb;
+            --url-color: #059669;     /* 綠色用於網址顯示 */
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header & Search Section */
+        .search-header {
+            margin-top: 60px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            letter-spacing: -0.025em;
+        }
+
+        .search-wrapper {
+            background: var(--card-bg);
+            padding: 8px;
+            border-radius: 50px; /* Pill shape */
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .search-wrapper:focus-within {
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 50px;
+            background: transparent;
+            color: var(--text-main);
+        }
+
+        .search-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .search-button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        /* Results Section */
+        .results-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .no-results {
+            text-align: center;
+            color: var(--text-sub);
+            margin-top: 40px;
+            font-size: 1.1rem;
+        }
+
+        .result-item {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .result-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .result-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .result-link {
+            color: var(--text-sub);
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+
+        .result-title {
+            display: block;
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .result-title:hover {
+            text-decoration: underline;
+        }
+
+        .score-badge {
+            background-color: #ecfdf5;
+            color: #059669;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="search-header">
+            <h1 class="brand-title">Search Engine</h1>
+            <form action="/search" method="get">
+                <div class="search-wrapper">
+                    <input type="text" name="query" class="search-box" th:value="${query}" placeholder="輸入關鍵字搜尋..." autocomplete="off" required />
+                    <button type="submit" class="search-button">搜尋</button>
+                </div>
+
+                <div style="margin-top: 14px; display:flex; justify-content:center; gap:16px; color: var(--text-sub);">
+  <label style="display:flex; align-items:center; gap:6px;">
+    <input type="radio" name="mode" value="static" th:checked="${mode == null or mode == 'static'}">
+    靜態抓取（root + 2 子頁）
+  </label>
+
+  <label style="display:flex; align-items:center; gap:6px;">
+    <input type="radio" name="mode" value="dynamic" th:checked="${mode == 'dynamic'}">
+    動態抓取（只抓 root）
+  </label>
+</div>
+            </form>
+        </div>
+
+        <div class="results-container" th:if="${results}">
+
+            <div th:if="${results.isEmpty()}" class="no-results">
+                <p>找不到關於 "<strong th:text="${query}" style="color: var(--text-main);"></strong>" 的結果。</p>
+            </div>
+
+            <div th:unless="${results.isEmpty()}" th:each="r : ${results}" class="result-item">
+                
+                <div class="result-meta">
+                    <span th:text="${r.url}" class="result-link">www.example.com</span>
+                </div>
+
+                <a th:href="${r.url}" target="_blank" class="result-title">
+                    <span th:text="${r.title}">[Result Title]</span>
+                </a>
+
+                <div style="margin-top: 10px;">
+                    <span class="score-badge">
+                        Score: <span th:text="${r.score}">0.0</span>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+        
+            <div class="recommendations" th:if="${relatedKeywords != null and !relatedKeywords.isEmpty()}" 
+     style="max-width: 600px; margin: 0 auto 30px auto; text-align: center;">
+    <span style="color: #64748b; font-size: 0.9rem; margin-right: 8px;">相關搜尋：</span>
+    
+    <span th:each="kw : ${relatedKeywords}" style="display: inline-block; margin: 4px;">
+        <a th:href="@{/search(query=${kw})}" 
+           th:text="${kw}"
+           style="
+              display: inline-block;
+              padding: 6px 14px;
+              background-color: #e0f2fe;
+              color: #0284c7;
+              border-radius: 20px;
+              text-decoration: none;
+              font-size: 0.9rem;
+              font-weight: 500;
+              transition: all 0.2s;
+           "
+           onmouseover="this.style.backgroundColor='#bae6fd'"
+           onmouseout="this.style.backgroundColor='#e0f2fe'"
+        >
+        關鍵字
+        </a>
+    </span>
+</div>
+
+<div class="results-container" th:if="${results}">
+    </div>
+
+
+    </div>
+
+</body>
+</html>
